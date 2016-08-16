@@ -1,0 +1,53 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the user module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function gusev_mailing_schema() {
+  $schema['gusev_mailing_mails_list'] = array(
+    'description' => 'List sending mails',
+    'fields' => array(
+      'mid' => array(
+        'description' => 'Mail id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'mail_from' => array(
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'From email',
+      ),
+      'mail_to' => array(
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'To email',
+      ),
+      'subject' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Subject mail',
+      ),
+      'body' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => TRUE,
+        'description' => 'Body mail',
+      ), 
+    ),
+    'primary key' => array('mid')
+  );
+
+  return $schema;
+}

@@ -1,0 +1,5 @@
+name = gusev mailing
+description = Custom mailing
+core = 7.x
+dependencies[] = ultimate_cron
+files[] = user.module
