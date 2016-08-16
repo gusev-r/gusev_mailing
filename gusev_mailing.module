@@ -1,15 +1,6 @@
 <?php
 
 /**
- * Implements hook_cron().
- *
- * Takes scheduled sending emails 
- */
-//function gusev_mailing_cron() {
-//    gusev_mailing_sending_email_from_mails_list();
-//}
-
-/**
  * Implements hook_cronapi().
  * Takes scheduled sending emails 
  */
@@ -25,15 +16,29 @@ function gusev_mailing_cronapi() {
     );
     return $items;
 }
-
 /**
- * The callback for the cron job,
+ * API function, add mail in mails pull.
  */
-function gusev_mailing_sending_emails_cron_job($job) {
-    gusev_mailing_sending_email_from_mails_list();
+function gusev_mailing_add_emails($to, $body, $subject = NULL, $from = NULL) {
+    $id = db_insert('gusev_mailing_mails_list')
+            ->fields(array(
+                'mail_from' => $from,
+                'mail_to' => $to,
+                'subject' => $subject,
+                'body' => $body
+            ))
+            ->execute();
+    return $id;
 }
 
-function gusev_mailing_sending_email_from_mails_list($count_emails = 100) {
+/**
+ * The callback for the cron job
+ */
+function gusev_mailing_sending_emails_cron_job($job) {
+    _gusev_mailing_sending_email_from_mails_list();
+}
+
+function _gusev_mailing_sending_email_from_mails_list($count_emails = 100) {
     $mails = db_select('gusev_mailing_mails_list', 'ml')
             ->fields('ml', array('mid', 'mail_from', 'mail_to', 'subject', 'body'))
             ->range(0, $count_emails)
@@ -45,7 +50,7 @@ function gusev_mailing_sending_email_from_mails_list($count_emails = 100) {
         $body = $value->body;
         $subject = $value->subject;
         $from = $value->mail_from;
-        $mail_true = gusev_mailing_send_mail($to, $body, $subject, $from);
+        $mail_true = _gusev_mailing_send_mail($to, $body, $subject, $from);
         if ($mail_true === TRUE) {
             db_delete('gusev_mailing_mails_list')
                     ->condition('mid', $value->mid)
@@ -54,11 +59,11 @@ function gusev_mailing_sending_email_from_mails_list($count_emails = 100) {
     }
 }
 
-function gusev_mailing_send_mail($to, $body, $subject = NULL, $from = NULL) {
+function _gusev_mailing_send_mail($to, $body, $subject = NULL, $from = NULL) {
     $module = 'gusev_mailing';
     $key = 'gusev_mailing_mail';
-    
-    if(!$from){
+
+    if (!$from) {
         $from = variable_get('site_mail', '');
     }
     $language = 'ru'; //язык
