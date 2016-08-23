@@ -19,7 +19,7 @@ function gusev_mailing_cronapi() {
 /**
  * API function, add mail in mails pull.
  */
-function gusev_mailing_add_emails($to, $body, $subject = NULL, $from = NULL) {
+function gusev_mailing_add_emails($to, $body, $subject = '', $from = '') {
     $id = db_insert('gusev_mailing_mails_list')
             ->fields(array(
                 'mail_from' => $from,
@@ -38,7 +38,7 @@ function gusev_mailing_sending_emails_cron_job($job) {
     _gusev_mailing_sending_email_from_mails_list();
 }
 
-function _gusev_mailing_sending_email_from_mails_list($count_emails = 100) {
+function _gusev_mailing_sending_email_from_mails_list($count_emails = 50) {
     $mails = db_select('gusev_mailing_mails_list', 'ml')
             ->fields('ml', array('mid', 'mail_from', 'mail_to', 'subject', 'body'))
             ->range(0, $count_emails)
